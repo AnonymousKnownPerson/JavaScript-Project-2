@@ -13,6 +13,7 @@ var config = {
 var game = new Phaser.Game(config);
 function preload() {
   this.load.image("background", "assets/amogus map1.png");
+  this.load.image("win", "assets/win.png");
   this.load.image("vent", "assets/vent.png");
   this.load.spritesheet("player", "assets/redSUS.png", {
     frameWidth: 200,
@@ -28,6 +29,8 @@ let vent;
 let isInVents = false;
 let inZone = false;
 let rangeToKill = false;
+let howManyToKill =10;
+let drip=false;
 function create() {
   let back = this.add.tileSprite(0, 0, 6000, 300, "background");
   back.setOrigin(0);
@@ -91,6 +94,12 @@ function create() {
       repeat: -1,
     });
     child.body.setEnable();
+    this.physics.add.overlap(player, child, function () {
+      if (!isInVents && cursors.space.isDown) {
+            child.destroy();
+            howManyToKill--;
+          }
+    });
   });
   vents = this.physics.add.staticGroup();
   vents.create(30, 200, "vent");
@@ -104,14 +113,6 @@ function create() {
   this.physics.add.overlap(vents, player, function () {
     inZone = true;
   });
-  // this.physics.add.overlap(
-  //   this.player,
-  //   this.amogus,  
-  //   function (player, amogs) {
-  //   if (!isInVents && cursors.space.isDown) {
-  //     amogs.destroy();
-  //   }
-  // });
 }
 function update() {
   
@@ -132,9 +133,9 @@ function update() {
   } else {
     player.setVisible(true);
     if (cursors.left.isDown) {
-      player.setVelocityX(-150);
+      player.setVelocityX(-450);
     } else if (cursors.right.isDown) {
-      player.setVelocityX(150);
+      player.setVelocityX(450);
     } else {
       player.setVelocityX(0);
     }
@@ -159,6 +160,13 @@ function update() {
       amogus.anims.play("front");
       amogus.setScale(1).refreshBody();
     }
+  }
+  if(howManyToKill==0 || drip==true){
+    let winned = this.add.tileSprite(0, 0, 900, 300, "win");
+    winned.setOrigin(0);
+    player.x=0;
+    player.y=0;
+    drip=true;  
   }
   inZone = false;
   rangeToKill = false;
