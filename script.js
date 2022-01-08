@@ -29,8 +29,8 @@ let vent;
 let isInVents = false;
 let inZone = false;
 let rangeToKill = false;
-let howManyToKill =10;
-let drip=false;
+let howManyToKill = 11;
+let drip = false;
 function create() {
   let back = this.add.tileSprite(0, 0, 6000, 300, "background");
   back.setOrigin(0);
@@ -96,9 +96,9 @@ function create() {
     child.body.setEnable();
     this.physics.add.overlap(player, child, function () {
       if (!isInVents && cursors.space.isDown) {
-            child.destroy();
-            howManyToKill--;
-          }
+        child.destroy();
+        howManyToKill--;
+      }
     });
   });
   vents = this.physics.add.staticGroup();
@@ -115,7 +115,6 @@ function create() {
   });
 }
 function update() {
-  
   if (inZone && cursors.down.isDown) {
     isInVents = true;
   } else if (inZone && cursors.up.isDown) {
@@ -161,12 +160,12 @@ function update() {
       amogus.setScale(1).refreshBody();
     }
   }
-  if(howManyToKill==0 || drip==true){
+  if (howManyToKill == 0 || drip == true) {
     let winned = this.add.tileSprite(0, 0, 900, 300, "win");
     winned.setOrigin(0);
-    player.x=0;
-    player.y=0;
-    drip=true;  
+    player.x = 0;
+    player.y = 0;
+    drip = true;
   }
   inZone = false;
   rangeToKill = false;
