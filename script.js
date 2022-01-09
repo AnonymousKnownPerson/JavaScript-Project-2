@@ -26,6 +26,7 @@ function preload() {
     frameHeight: 200,
   });
 }
+let scoreText;
 var lost;
 let amogus;
 let vent;
@@ -45,6 +46,10 @@ function create() {
   lost.setVisible(false);
   back.setOrigin(0);
   player = this.physics.add.sprite(50, 100, "player", 2);
+  scoreText = this.add.text(0, 270, "score: 0", {
+    fontSize: "32px",
+    fill: "#420",
+  });
   player.setBounce(0);
   player.setCollideWorldBounds(true);
   player.body.gravity.y = 500;
@@ -116,6 +121,7 @@ function create() {
         howManyToKill--;
         susSituation = true;
         killingDate = Math.round(Date.now() / 1000);
+        scoreText.setText("Enemies : " + howManyToKill);
       }
     });
     this.physics.add.overlap(buton, child, function () {
@@ -143,10 +149,14 @@ function create() {
   });
 }
 function update() {
+  scoreText.setText("Enemies : " + howManyToKill);
+  scoreText.x = player.body.position.x;  
   if (inZone && cursors.down.isDown) {
     isInVents = true;
+    susSituation = true;
   } else if (inZone && cursors.up.isDown) {
     isInVents = false;
+    susSituation = true;
   }
   if (isInVents) {
     player.setVisible(false);
@@ -184,7 +194,7 @@ function update() {
   }
   amogus.children.iterate((child) => {
     let x = Math.abs(player.x - child.x);
-    if (susSituation && x < 600) {
+    if (susSituation && x < 450) {
       if (player.x - child.x > 0 && child.body.velocity.x > 0)
         child.setVelocityX(-400);
       else if (player.x - child.x < 0 && child.body.velocity.x < 0)
@@ -198,7 +208,6 @@ function update() {
       child.anims.play("front1");
     }
   });
-
   if (przegrana == true) {
     lost.setOrigin(0);
     lost.setVisible(true);
@@ -206,6 +215,7 @@ function update() {
     player.y = 0;
     player.setVisible(false);
     amogus.setVisible(false);
+    scoreText.setVisible(false);
   }
   inZone = false;
   rangeToKill = false;
