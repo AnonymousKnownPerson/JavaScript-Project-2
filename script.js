@@ -13,7 +13,9 @@ var config = {
 var game = new Phaser.Game(config);
 function preload() {
   this.load.image("background", "assets/amogus map1.png");
+  this.load.image("buton", "assets/block1.png");
   this.load.image("win", "assets/win.png");
+  this.load.image("lost", "assets/lost.png");
   this.load.image("vent", "assets/vent.png");
   this.load.spritesheet("player", "assets/redSUS.png", {
     frameWidth: 200,
@@ -24,15 +26,23 @@ function preload() {
     frameHeight: 200,
   });
 }
+var lost;
 let amogus;
 let vent;
+let buton;
 let isInVents = false;
 let inZone = false;
 let rangeToKill = false;
 let howManyToKill = 11;
 let drip = false;
+let sus = true;
+let przegrana = false;
+let susSituation = false;
+let killingDate = Math.round(Date.now() / 1000);
 function create() {
   let back = this.add.tileSprite(0, 0, 6000, 300, "background");
+  lost = this.add.tileSprite(0, 0, 900, 300, "lost");
+  lost.setVisible(false);
   back.setOrigin(0);
   player = this.physics.add.sprite(50, 100, "player", 2);
   player.setBounce(0);
@@ -60,16 +70,18 @@ function create() {
   this.cameras.main.setBounds(0, 0, 6000, 300);
   this.physics.world.setBounds(0, 0, 6000, 300);
   this.cameras.main.startFollow(player);
-  // Do przemka, wiem że da radę to lepiej zrobić więc to popraw XDD
-  //YandereDEV
-
-  //amogus = this.physics.add.sprite(50, 100, "amogus1", 2);
   amogus = this.physics.add.group({
     key: "amogus1",
     repeat: 10,
     setXY: { x: 100, y: 300, stepX: 300 },
   });
-  //amogus.create(200, 100, "amogus1", 2);
+  buton = this.physics.add.staticGroup();
+  buton
+    .create(2700, 110, "buton")
+    .setScale(0.2)
+    .setOrigin(0)
+    .refreshBody()
+    .setVisible(false);
   amogus.children.iterate((child) => {
     child.setBounce(1);
     child.body.gravity.y = 500;
@@ -77,27 +89,43 @@ function create() {
     child.setCollideWorldBounds(true);
     child.setVelocityX(Phaser.Math.FloatBetween(-100, 100));
     this.anims.create({
-      key: "left",
+      key: "left1",
       frames: this.anims.generateFrameNumbers("amogus1", { start: 0, end: 1 }),
       frameRate: 10,
       repeat: -1,
     });
     this.anims.create({
-      key: "front",
+      key: "front1",
       frames: [{ key: "amogus1", frame: 2 }],
       frameRate: 20,
     });
     this.anims.create({
-      key: "right",
+      key: "right1",
       frames: this.anims.generateFrameNumbers("amogus1", { start: 3, end: 4 }),
       frameRate: 10,
       repeat: -1,
     });
     child.body.setEnable();
     this.physics.add.overlap(player, child, function () {
-      if (!isInVents && cursors.space.isDown) {
+      if (
+        !isInVents &&
+        cursors.space.isDown &&
+        Math.round(Date.now() / 1000) - killingDate > 2
+      ) {
         child.destroy();
         howManyToKill--;
+        susSituation = true;
+        killingDate = Math.round(Date.now() / 1000);
+      }
+    });
+    this.physics.add.overlap(buton, child, function () {
+      if (
+        przegrana ||
+        child.body.velocity.x > 399 ||
+        child.body.velocity.x < -399
+      ) {
+        przegrana = true;
+        player.setVisible(false);
       }
     });
   });
@@ -123,18 +151,18 @@ function update() {
   if (isInVents) {
     player.setVisible(false);
     if (cursors.left.isDown) {
-      player.setVelocityX(-700);
+      player.setVelocityX(-1000);
     } else if (cursors.right.isDown) {
-      player.setVelocityX(700);
+      player.setVelocityX(1000);
     } else {
       player.setVelocityX(0);
     }
   } else {
     player.setVisible(true);
     if (cursors.left.isDown) {
-      player.setVelocityX(-450);
+      player.setVelocityX(-300);
     } else if (cursors.right.isDown) {
-      player.setVelocityX(450);
+      player.setVelocityX(300);
     } else {
       player.setVelocityX(0);
     }
@@ -147,19 +175,6 @@ function update() {
   } else {
     player.anims.play("front");
   }
-
-  if (typeof amogus.body !== "undefined") {
-    if (amogus.body.velocity.x < 0) {
-      amogus.anims.play("left", true);
-      amogus.setScale(1).refreshBody();
-    } else if (amogus.body.velocity.x > 0) {
-      amogus.anims.play("right", true);
-      amogus.setScale(1).refreshBody();
-    } else {
-      amogus.anims.play("front");
-      amogus.setScale(1).refreshBody();
-    }
-  }
   if (howManyToKill == 0 || drip == true) {
     let winned = this.add.tileSprite(0, 0, 900, 300, "win");
     winned.setOrigin(0);
@@ -167,6 +182,32 @@ function update() {
     player.y = 0;
     drip = true;
   }
+  amogus.children.iterate((child) => {
+    let x = Math.abs(player.x - child.x);
+    if (susSituation && x < 600) {
+      if (player.x - child.x > 0 && child.body.velocity.x > 0)
+        child.setVelocityX(-400);
+      else if (player.x - child.x < 0 && child.body.velocity.x < 0)
+        child.setVelocityX(400);
+    }
+    if (child.body.velocity.x < 0) {
+      child.anims.play("left1", true);
+    } else if (child.body.velocity.x > 0) {
+      child.anims.play("right1", true);
+    } else {
+      child.anims.play("front1");
+    }
+  });
+
+  if (przegrana == true) {
+    lost.setOrigin(0);
+    lost.setVisible(true);
+    player.x = 0;
+    player.y = 0;
+    player.setVisible(false);
+    amogus.setVisible(false);
+  }
   inZone = false;
   rangeToKill = false;
+  susSituation = false;
 }
