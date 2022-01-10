@@ -1,3 +1,4 @@
+//Przykładowe włączenie serwera http nasłuchującego na porcie 4200 za pomocą pythona - python -m http.server 4200
 var config = {
   type: Phaser.AUTO,
   width: 900,
@@ -266,5 +267,3 @@ function update() {
   rangeToKill = false;
   susSituation = false;
 }
-
-function dialog() {}
