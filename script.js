@@ -26,7 +26,15 @@ function preload() {
     frameHeight: 200,
   });
 }
-let textToDialog = ['Red Sus', 'White is Kinda Sus', 'Amogus', 'Zus', 'Gus', 'nothing happened in tiananmen square', '¿Cuáles son sus objetivos profesionales a largo plazo?']
+let textToDialog = [
+  "Red Sus",
+  "White is Kinda Sus",
+  "Amogus",
+  "Zus",
+  "Gus",
+  "nothing happened in tiananmen square",
+  "¿Cuáles son sus objetivos profesionales a largo plazo?",
+];
 let scoreText;
 var lost;
 let amogus;
@@ -210,10 +218,16 @@ function update() {
     } else {
     }
     if (susSituation && x < 450) {
-      if (player.x - child.x > 0 && child.body.velocity.x > 0)
+      if (player.x - child.x > 0 && (child.body.velocity.x > 0 || talking)) {
         child.setVelocityX(-400);
-      else if (player.x - child.x < 0 && child.body.velocity.x < 0)
+        textDialog.setVisible(false);
+      } else if (
+        player.x - child.x < 0 &&
+        (child.body.velocity.x < 0 || talking)
+      ) {
         child.setVelocityX(400);
+        textDialog.setVisible(false);
+      }
     }
     if (child.body.velocity.x < 0) {
       child.anims.play("left1", true);
@@ -227,8 +241,8 @@ function update() {
         !isInVents &&
         cursors.shift.isDown &&
         Math.round(Date.now() / 1000) - talkingDate > 3 &&
-        (child.body.velocity.x < 399 &&
-          child.body.velocity.x > -399)
+        child.body.velocity.x < 399 &&
+        child.body.velocity.x > -399
       ) {
         talking = true;
         talkingDate = Math.round(Date.now() / 1000);
