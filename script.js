@@ -26,9 +26,11 @@ function preload() {
     frameHeight: 200,
   });
 }
+let textToDialog = ['Red Sus', 'White is Kinda Sus', 'Amogus', 'Zus', 'Gus', 'nothing happened in tiananmen square', '¿Cuáles son sus objetivos profesionales a largo plazo?']
 let scoreText;
 var lost;
 let amogus;
+let textDialog;
 let vent;
 let buton;
 let isInVents = false;
@@ -37,9 +39,11 @@ let rangeToKill = false;
 let howManyToKill = 11;
 let drip = false;
 let sus = true;
+let talking = false;
 let przegrana = false;
 let susSituation = false;
 let killingDate = Math.round(Date.now() / 1000);
+let talkingDate = Math.round(Date.now() / 1000);
 function create() {
   let back = this.add.tileSprite(0, 0, 6000, 300, "background");
   lost = this.add.tileSprite(0, 0, 900, 300, "lost");
@@ -49,6 +53,10 @@ function create() {
   scoreText = this.add.text(0, 270, "score: 0", {
     fontSize: "32px",
     fill: "#420",
+  });
+  textDialog = this.add.text(0, 50, "", {
+    fontSize: "45px",
+    fill: "#999",
   });
   player.setBounce(0);
   player.setCollideWorldBounds(true);
@@ -150,7 +158,7 @@ function create() {
 }
 function update() {
   scoreText.setText("Enemies : " + howManyToKill);
-  scoreText.x = player.body.position.x;  
+  scoreText.x = player.body.position.x;
   if (inZone && cursors.down.isDown) {
     isInVents = true;
     susSituation = true;
@@ -194,6 +202,13 @@ function update() {
   }
   amogus.children.iterate((child) => {
     let x = Math.abs(player.x - child.x);
+    if (child.body.velocity.x == 0 && !talking)
+      child.setVelocityX(Phaser.Math.FloatBetween(-100, 100));
+    if (talking && Math.round(Date.now() / 1000) - talkingDate > 3) {
+      talking = false;
+      textDialog.setVisible(false);
+    } else {
+    }
     if (susSituation && x < 450) {
       if (player.x - child.x > 0 && child.body.velocity.x > 0)
         child.setVelocityX(-400);
@@ -207,6 +222,22 @@ function update() {
     } else {
       child.anims.play("front1");
     }
+    this.physics.add.overlap(player, child, function () {
+      if (
+        !isInVents &&
+        cursors.shift.isDown &&
+        Math.round(Date.now() / 1000) - talkingDate > 3 &&
+        (child.body.velocity.x < 399 &&
+          child.body.velocity.x > -399)
+      ) {
+        talking = true;
+        talkingDate = Math.round(Date.now() / 1000);
+        textDialog.x = child.body.position.x;
+        textDialog.setText(textToDialog[Math.floor(Math.random() * 7)]);
+        textDialog.setVisible(true);
+        child.setVelocityX(0);
+      }
+    });
   });
   if (przegrana == true) {
     lost.setOrigin(0);
@@ -221,3 +252,5 @@ function update() {
   rangeToKill = false;
   susSituation = false;
 }
+
+function dialog() {}
