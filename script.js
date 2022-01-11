@@ -31,14 +31,15 @@ function preload() {
   });
 }
 let textToDialog = [
-  "Red Sus",
-  "White is Kinda Sus",
-  "Amogus",
-  "Zus",
-  "Gus",
-  "nothing happened in tiananmen square",
-  "¿Cuáles son sus objetivos profesionales a largo plazo?",
+  "Did you sabotage O2?",
+  "We can power the whole ship",
+  "We can do it togehter !!!",
+  "Where is the body?",
+  "I want to watch you at Security",
+  "Somebody call an emergency meeting",
+  "You're sabotaging my O2 levels",
 ];
+//very quality code
 let scoreText;
 var lost;
 let killicon;
@@ -70,7 +71,7 @@ function create() {
     fill: "#420",
   });
   textDialog = this.add.text(0, 50, "", {
-    fontSize: "45px",
+    fontSize: "30px",
     fill: "#000000",
     backgroundColor: "#999999",
   });
