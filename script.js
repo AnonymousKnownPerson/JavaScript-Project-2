@@ -230,10 +230,10 @@ function update() {
     ventIsVisible = false;
   }
   //venty
-  if (inZone && cursors.down.isDown) {
+  if (inZone && cursors.down.isDown&&!isInVents) {
     isInVents = true;
     susSituation = true;
-  } else if (inZone && cursors.up.isDown) {
+  } else if (inZone && cursors.up.isDown&&isInVents) {
     isInVents = false;
     susSituation = true;
   }
