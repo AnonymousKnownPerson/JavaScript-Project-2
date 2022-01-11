@@ -34,8 +34,8 @@ let textToDialog = [
   "Did you sabotage O2?",
   "We can power the whole ship",
   "We can do it togehter !!!",
-  "Where is the body?",
-  "I want to watch you at Security",
+  "Amogus",
+  "I want to watch you, you sussy baka",
   "Somebody call an emergency meeting",
   "You're sabotaging my O2 levels",
 ];
